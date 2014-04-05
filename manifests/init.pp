@@ -138,7 +138,7 @@ class composer(
     composer::selfupdate {'auto_update': }
   }
 
-  if $suhosin_enabled {
+  if $suhosin_enabled == true {
     case $family {
 
       'Redhat','Centos': {
@@ -156,8 +156,8 @@ class composer(
           changes     => 'set allow_url_fopen On',
           require     => Package[$php_package],
         }
-
       }
+
      'Debian': {
 
         # set /etc/php5/cli/php.ini/suhosin.executor.include.whitelist = phar
@@ -168,7 +168,7 @@ class composer(
         }
 
         # set /etc/php5/cli/php.ini/PHP/allow_url_fopen = On
-        augeas{ 'allow_url_fopen':
+        augeas { 'allow_url_fopen':
           context     => '/files/etc/php5/cli/php.ini/PHP',
           changes     => 'set allow_url_fopen On',
           require     => Package[$php_package],
