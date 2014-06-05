@@ -49,6 +49,8 @@ class composer(
   $composer_file   = $composer::params::composer_file,
   $download_method = $composer::params::download_method,
   $method_package  = $composer::params::method_package,
+  $curl_package    = $composer::params::method_package,
+  $wget_package    = $composer::params::method_package,
   $logoutput       = $composer::params::logoutput,
   $tmp_path        = $composer::params::tmp_path,
   $php_package     = $composer::params::php_package,
@@ -57,7 +59,8 @@ class composer(
   $suhosin_enabled = $composer::params::suhosin_enabled,
 ) inherits composer::params {
 
-  include stdlib
+  warning('The $curl_package parameter is deprecated so users of this module will get failures when they update if they have these set')
+  warning('The $wget_package parameter is deprecated so users of this module will get failures when they update if they have these set')
 
   case $download_method {
     'curl': {
