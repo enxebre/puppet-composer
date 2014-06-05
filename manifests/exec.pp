@@ -26,6 +26,7 @@ define composer::exec (
   $verbose           = false,
   $refreshonly       = false,
   $user              = undef,
+  $global            = false,
 ) {
 
   require composer
@@ -36,8 +37,8 @@ define composer::exec (
     user        => $user,
   }
 
-  if $cmd != 'install' and $cmd != 'update' {
-    fail("Only types 'install' and 'update' are allowed, ${cmd} given")
+  if $cmd != 'install' and $cmd != 'update' and $cmd != 'require' {
+    fail("Only types 'install', 'update' and 'require'' are allowed, ${cmd} given")
   }
 
   if $prefer_source and $prefer_dist {
