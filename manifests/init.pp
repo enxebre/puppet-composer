@@ -58,6 +58,7 @@ class composer(
   $php_bin         = $composer::params::php_bin,
   $suhosin_enabled = $composer::params::suhosin_enabled,
   $projects        = hiera_hash('composer::projects', {}),
+  $execs           = hiera_hash('composer::execs', {}),
 ) inherits composer::params {
 
   warning('The $curl_package parameter is deprecated so users of this module will get failures when they update if they have these set')
@@ -108,6 +109,7 @@ class composer(
   if $projects {
     class {'composer::project_factory' :
       projects => $projects,
+      execs    => $execs,
     }
   }
 }
