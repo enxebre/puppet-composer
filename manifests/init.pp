@@ -104,4 +104,10 @@ class composer(
     require => [ Exec['download_composer'], File[$target_dir] ],
     mode    => 0755,
   }
+
+  if $projects {
+    class {'composer::project_factory' :
+      projects => $projects,
+    }
+  }
 }
