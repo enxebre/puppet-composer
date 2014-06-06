@@ -13,20 +13,23 @@
 define composer::exec (
   $cmd,
   $cwd,
-  $packages          = [],
-  $prefer_source     = false,
-  $prefer_dist       = false,
-  $dry_run           = false,
-  $custom_installers = false,
-  $scripts           = false,
-  $optimize          = false,
-  $interaction       = false,
-  $dev               = false,
-  $logoutput         = false,
-  $verbose           = false,
-  $refreshonly       = false,
-  $user              = undef,
-  $global            = false,
+  $packages                 = [],
+  $prefer_source            = false,
+  $prefer_dist              = false,
+  $dry_run                  = false,
+  $custom_installers        = false,
+  $scripts                  = false,
+  $optimize                 = false,
+  $interaction              = false,
+  $dev                      = false,
+  $no_update                = false, 
+  $no_progress              = false,
+  $update_with_dependencies = false,
+  $logoutput                = false,
+  $verbose                  = false,
+  $refreshonly              = false,
+  $user                     = undef,
+  $global                   = false,
 ) {
 
   require composer
@@ -51,9 +54,10 @@ define composer::exec (
   }
 
   exec { "composer_update_${title}":
-    command     => template('composer/exec.erb'),
+    command     => template("composer/${cmd}.erb"),
     cwd         => $cwd,
-    logoutput   => $logoutput,
-    refreshonly => $refreshonly
+    logoutput   => true,
+    refreshonly => $refreshonly,
+    user        => $user,
   }
 }
