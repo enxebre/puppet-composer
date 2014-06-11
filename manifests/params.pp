@@ -29,9 +29,9 @@ class composer::params {
       $method_package  = $download_method
       $logoutput       = false
       $tmp_path        = '/tmp'
-      $php_package     = 'php5-cli'
+      $php_package     = ''
       $php_bin         = 'php'
-      $suhosin_enabled = true
+      $suhosin_enabled = false
     }
     'RedHat', 'Centos': {
       $target_dir      = '/usr/local/bin'
@@ -40,9 +40,9 @@ class composer::params {
       $method_package  = $download_method
       $logoutput       = false
       $tmp_path        = '/tmp'
-      $php_package     = 'php-cli'
+      $php_package     = ''
       $php_bin         = 'php'
-      $suhosin_enabled = true
+      $suhosin_enabled = false
     }
     default: {
       fail("Unsupported platform: ${family}")

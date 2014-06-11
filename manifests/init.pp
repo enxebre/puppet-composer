@@ -106,7 +106,7 @@ class composer(
     mode    => 0755,
   }
 
-  if $projects {
+  if $projects or $execs {
     class {'composer::project_factory' :
       projects => $projects,
       execs    => $execs,

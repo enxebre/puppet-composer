@@ -34,12 +34,6 @@ define composer::exec (
 
   require composer
 
-  Exec {
-    path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
-    environment => "COMPOSER_HOME=${composer::composer_home}",
-    user        => $user,
-  }
-
   if $cmd != 'install' and $cmd != 'update' and $cmd != 'require' {
     fail("Only types 'install', 'update' and 'require'' are allowed, ${cmd} given")
   }
@@ -53,11 +47,19 @@ define composer::exec (
     false => "${composer::php_bin} ${composer::target_dir}/${composer::composer_file} ${cmd}",
   }
 
+  if ! defined(File[$cwd]) {
+    file{ $cwd :
+      ensure => directory,
+    }
+  }
+
   exec { "composer_update_${title}":
     command     => template("composer/${cmd}.erb"),
     cwd         => $cwd,
-    logoutput   => true,
+    logoutput   => $logoutput,
     refreshonly => $refreshonly,
     user        => $user,
+    path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
+    environment => "COMPOSER_HOME=${composer::composer_home}",
   }
 }
