@@ -30,6 +30,7 @@ define composer::exec (
   $refreshonly              = false,
   $user                     = undef,
   $global                   = false,
+  $sys_link_bins            = false,
 ) {
 
   require composer
@@ -61,5 +62,22 @@ define composer::exec (
     user        => $user,
     path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
     environment => "COMPOSER_HOME=${composer::composer_home}",
+  }
+
+  if $sys_link_bins {
+
+    exec { "composer_bin_files":
+      command  => '
+                    cd /opt/composer_libs/vendor/bin;
+                    unset BIN_FILES;
+                    BIN_FILES=$(ls);
+                    for file in ${BIN_FILES};
+                      do ln ${file} "/usr/bin/${file}"
+                    done;',
+      provider => 'shell',            
+      cwd      => $cwd,
+      logoutput => true,
+      path => ['/usr/bin', '/bin', '/sbin'],
+    }
   }
 }
