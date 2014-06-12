@@ -66,18 +66,20 @@ define composer::exec (
 
   if $sys_link_bins {
 
-    exec { "composer_bin_files":
-      command  => '
-                    cd /opt/composer_libs/vendor/bin;
+    exec { "composer_bin_files_${title}":
+      command   => '
+                    cd vendor/bin;
                     unset BIN_FILES;
                     BIN_FILES=$(ls);
+                    BIN_FOLDER=$(pwd);  
                     for file in ${BIN_FILES};
-                      do ln ${file} "/usr/bin/${file}"
+                      do ln -sf ${BIN_FOLDER}/${file} "/usr/bin/"
                     done;',
-      provider => 'shell',            
-      cwd      => $cwd,
-      logoutput => true,
-      path => ['/usr/bin', '/bin', '/sbin'],
+      provider  => 'shell',
+      cwd       => $cwd,
+      logoutput => $logoutput,
+      path      => ['/usr/bin', '/bin', '/sbin'],
+      require   => [ Exec["composer_update_${title}"] ]
     }
   }
 }
