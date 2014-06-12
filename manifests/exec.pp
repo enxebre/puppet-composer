@@ -62,6 +62,7 @@ define composer::exec (
     user        => $user,
     path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
     environment => "COMPOSER_HOME=${composer::composer_home}",
+    require     => [ File[$cwd] ],
   }
 
   if $sys_link_bins {
