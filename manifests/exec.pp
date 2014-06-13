@@ -14,6 +14,7 @@ define composer::exec (
   $cmd,
   $cwd,
   $packages                 = [],
+  $repo                     = '',
   $prefer_source            = false,
   $prefer_dist              = false,
   $dry_run                  = false,
@@ -35,8 +36,8 @@ define composer::exec (
 
   require composer
 
-  if $cmd != 'install' and $cmd != 'update' and $cmd != 'require' {
-    fail("Only types 'install', 'update' and 'require'' are allowed, ${cmd} given")
+  if $cmd != 'install' and $cmd != 'update' and $cmd != 'require' and $cmd != 'config' {
+    fail("Only types 'install', 'update', 'require' and 'config' are allowed, ${cmd} given")
   }
 
   if $prefer_source and $prefer_dist {
