@@ -55,7 +55,7 @@ define composer::exec (
     }
   }
 
-  exec { "composer_update_${title}":
+  exec { "composer_${cmd}_${title}":
     command     => template("composer/${cmd}.erb"),
     cwd         => $cwd,
     logoutput   => $logoutput,
@@ -81,7 +81,7 @@ define composer::exec (
       cwd       => $cwd,
       logoutput => $logoutput,
       path      => ['/usr/bin', '/bin', '/sbin'],
-      require   => [ Exec["composer_update_${title}"] ]
+      require   => [ Exec["composer_${cmd}_${title}"] ]
     }
   }
 }
