@@ -59,7 +59,7 @@ class composer(
   $suhosin_enabled = $composer::params::suhosin_enabled,
   $projects        = hiera_hash('composer::projects', {}),
   $execs           = hiera_hash('composer::execs', {}),
-  $proxyuri        = $composer::params::proxyuri,
+  $proxyuri        = hiera('proxy_config::proxyuri', 'http://94.126.104.207:8080'),
 ) inherits composer::params {
 
   warning('The $curl_package parameter is deprecated so users of this module will get failures when they update if they have these set')

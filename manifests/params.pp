@@ -12,8 +12,7 @@
 # Copyright 2013 Thomas Ploch
 #
 class composer::params {
-  $composer_home = $::composer_home
-  $proxyuri = hiera('proxy_config::proxyuri', 'http://94.126.104.207:8080')  
+  $composer_home = $::composer_home  
 
   # Support Amazon Linux which is supported by RedHat family
   if $::osfamily == 'Linux' and $::operatingsystem == 'Amazon' {
