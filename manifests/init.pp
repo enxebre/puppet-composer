@@ -67,7 +67,7 @@ class composer(
 
   case $download_method {
     'curl': {
-      $download_command = "curl -s -v -L -x ${$proxyuri} http://getcomposer.org/installer | ${composer::php_bin}"
+      $download_command = "curl -s -v -L -S -x ${$proxyuri} http://getcomposer.org/installer | ${composer::php_bin}"
     }
     'wget': {
       $download_command = 'wget http://getcomposer.org/composer.phar -O composer.phar'
