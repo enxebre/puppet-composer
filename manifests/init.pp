@@ -67,7 +67,7 @@ class composer(
 
   case $download_method {
     'curl': {
-      $download_command = "curl -x ${$proxyuri} http://getcomposer.org/installer | ${composer::php_bin}"
+      $download_command = "curl -s -x ${$proxyuri} http://getcomposer.org/installer | ${composer::php_bin}"
     }
     'wget': {
       $download_command = 'wget http://getcomposer.org/composer.phar -O composer.phar'
@@ -90,7 +90,7 @@ class composer(
     command   => $download_command,
     cwd       => $tmp_path,
     creates   => "${tmp_path}/composer.phar",
-    logoutput => $logoutput,
+    logoutput => true,
     path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
   }
 
