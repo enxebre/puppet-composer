@@ -59,6 +59,7 @@ class composer(
   $suhosin_enabled = $composer::params::suhosin_enabled,
   $projects        = hiera_hash('composer::projects', {}),
   $execs           = hiera_hash('composer::execs', {}),
+  $proxyuri        = $composer::params::proxyuri,
 ) inherits composer::params {
 
   warning('The $curl_package parameter is deprecated so users of this module will get failures when they update if they have these set')
@@ -66,7 +67,7 @@ class composer(
 
   case $download_method {
     'curl': {
-      $download_command = "curl -s http://getcomposer.org/installer | ${composer::php_bin}"
+      $download_command = "curl -x ${$proxyuri} http://getcomposer.org/installer | ${composer::php_bin}"
     }
     'wget': {
       $download_command = 'wget http://getcomposer.org/composer.phar -O composer.phar'
