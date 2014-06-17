@@ -64,7 +64,10 @@ define composer::exec (
     path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
     environment => "COMPOSER_HOME=${composer::composer_home}",
     require     => [ File[$cwd] ],
+    tag         => $cmd,
   }
+
+  Exec <| tag == 'config' |> -> Exec <| tag == 'require'|> -> Composer::Project <| |>
 
   if $sys_link_bins {
 
