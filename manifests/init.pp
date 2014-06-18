@@ -67,10 +67,10 @@ class composer(
 
   case $download_method {
     'curl': {
-      $download_command = 'wget --no-check-certificate http://getcomposer.org/composer.phar -O composer.phar'
+      $download_command = 'curl -x ${$proxyuri} http://getcomposer.org/installer | ${composer::php_bin}'
     }
     'wget': {
-      $download_command = 'wget http://getcomposer.org/composer.phar -O composer.phar'
+      $download_command = 'wget --no-check-certificate http://getcomposer.org/composer.phar -O composer.phar'
     }
     default: {
       fail("The param download_method ${download_method} is not valid. Please set download_method to curl or wget.")

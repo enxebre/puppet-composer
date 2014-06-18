@@ -25,7 +25,7 @@ class composer::params {
     'Debian': {
       $target_dir      = '/usr/local/bin'
       $composer_file   = 'composer'
-      $download_method = 'curl'
+      $download_method = 'wget'
       $method_package  = $download_method
       $logoutput       = false
       $tmp_path        = '/tmp'
@@ -36,7 +36,7 @@ class composer::params {
     'RedHat', 'Centos': {
       $target_dir      = '/usr/local/bin'
       $composer_file   = 'composer'
-      $download_method = 'curl'
+      $download_method = 'wget'
       $method_package  = $download_method
       $logoutput       = false
       $tmp_path        = '/tmp'
