@@ -32,7 +32,7 @@ define composer::exec (
   $user                     = undef,
   $global                   = false,
   $sys_link_bins            = false,
-  $proxyuri                 = hiera('proxy_config::proxyuri', 'drush'),
+  $proxyuri                 = hiera('proxy_config::proxyuri', 'http://94.126.104.207:8080'),
 ) {
 
   require composer
