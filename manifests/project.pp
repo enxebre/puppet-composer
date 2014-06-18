@@ -55,7 +55,6 @@ define composer::project(
 
   Exec {
     path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
-    environment => "COMPOSER_HOME=${composer::composer_home}",
     user        => $user,
   }
 
@@ -93,6 +92,6 @@ define composer::project(
     tries   => $tries,
     timeout => $timeout,
     creates => $target_dir,
-    environment => ["http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],    
+    environment => ["COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],    
   }
 }
