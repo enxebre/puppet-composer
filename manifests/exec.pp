@@ -32,6 +32,7 @@ define composer::exec (
   $user                     = undef,
   $global                   = false,
   $sys_link_bins            = false,
+  $proxyuri                 = hiera('proxy_config::proxyuri', 'drush'),
 ) {
 
   require composer
@@ -62,7 +63,7 @@ define composer::exec (
     refreshonly => $refreshonly,
     user        => $user,
     path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
-    environment => "COMPOSER_HOME=${composer::composer_home}",
+    environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ],
     require     => [ File[$cwd] ],
     tag         => $cmd,
   }

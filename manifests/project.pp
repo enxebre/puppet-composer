@@ -48,6 +48,7 @@ define composer::project(
   $tries          = 3,
   $timeout        = 1200,
   $user           = undef,
+  $proxyuri        = hiera('proxy_config::proxyuri', 'drush'),
 ) {
 
   require composer
@@ -92,5 +93,6 @@ define composer::project(
     tries   => $tries,
     timeout => $timeout,
     creates => $target_dir,
+    environment => ["http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],    
   }
 }
