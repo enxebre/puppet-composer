@@ -56,6 +56,13 @@ define composer::exec (
     }
   }
 
+  if ! defined(File["${cwd}composer.json"]) {
+    file{ "${cwd}composer.json" :
+      ensure  => present,
+      content => '{}',
+    }
+  }
+
   exec { "composer_${cmd}_${title}":
     command     => template("composer/${cmd}.erb"),
     cwd         => $cwd,
