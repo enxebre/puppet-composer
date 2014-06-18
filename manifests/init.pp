@@ -67,7 +67,7 @@ class composer(
 
   case $download_method {
     'curl': {
-      $download_command = 'wget http://getcomposer.org/composer.phar -O composer.phar'
+      $download_command = 'wget --no-check-certificate http://getcomposer.org/composer.phar -O composer.phar'
     }
     'wget': {
       $download_command = 'wget http://getcomposer.org/composer.phar -O composer.phar'
@@ -90,6 +90,7 @@ class composer(
     command   => $download_command,
     cwd       => $tmp_path,
     creates   => "${tmp_path}/composer.phar",
+    environment => ["http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],
     logoutput => true,
     path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
   }
