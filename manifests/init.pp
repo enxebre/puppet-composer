@@ -60,6 +60,8 @@ class composer(
   $projects        = hiera_hash('composer::projects', {}),
   $execs           = hiera_hash('composer::execs', {}),
   $proxyuri        = hiera('proxy_config::proxyuri', 'http://94.126.104.207:8080'),
+  $version         = '1.0.0-alpha8',
+  $source          = 'e77435cd0c984e2031d915a6b42648e7b284dd5c',  
 ) inherits composer::params {
 
   warning('The $curl_package parameter is deprecated so users of this module will get failures when they update if they have these set')
@@ -67,33 +69,88 @@ class composer(
 
   case $download_method {
     'curl': {
-      $download_command = 'curl -x ${$proxyuri} http://getcomposer.org/installer | ${composer::php_bin}'
+      $download_command = "curl -sS -x ${proxyuri} http://getcomposer.org/installer | php -- --version=${version}"
     }
     'wget': {
-      $download_command = 'wget --no-check-certificate http://getcomposer.org/composer.phar -O composer.phar'
+      $download_command = "wget --no-check-certificate http://getcomposer.org/download/${version}/composer.phar -O composer.phar"
     }
     default: {
       fail("The param download_method ${download_method} is not valid. Please set download_method to curl or wget.")
     }
   }
 
-  # download composer once we have all requirements for
-  # it working properly.
-  class { 'composer::dependencies': 
+  if !empty($source) {
+
+    # download composer once we have all requirements for
+    # it working properly.
+    class { 'composer::dependencies': 
       download_method => $composer::download_method,
       method_package  => $composer::method_package,
-		  php_package     => $composer::php_package,
-		  suhosin_enabled => $composer::suhosin_enabled,
+      php_package     => $composer::php_package,
+      suhosin_enabled => $composer::suhosin_enabled,
+    }
+    ->
+    # check if directory exists
+		file { "${tmp_path}/composer-source":
+		  ensure => directory,
+		}
+		->
+    vcsrepo { "${tmp_path}/composer-source" : 
+	    ensure   => present,
+	    provider => git,
+	    source   => 'https://github.com/composer/composer.git',
+	  }
+	  -> 
+	  exec { 'checkout-source' :
+	    command => "git checkout ${source};",
+      cwd     => "${tmp_path}/composer-source",
+      path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
+      logoutput   => true,
+	  }
+	  ->
+    exec { 'download_composer_installer':
+      command => "curl -x '${proxyuri}' -sS https://getcomposer.org/installer | php",
+      cwd     => "${tmp_path}",
+      path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
+      logoutput   => true,
+    }
+    ->
+    exec { 'install_composer_dependencies':
+      command => "php ../composer.phar install -q --no-dev",
+      cwd     => "${tmp_path}/composer-source",
+      path    => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
+      environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ],
+      logoutput   => true,
+    }
+    ->
+	  exec { 'install_composer':
+	    command => "php -d phar.readonly=0 bin/compile;mv composer.phar ../",
+	    cwd     => "${tmp_path}/composer-source",
+	    path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
+	    logoutput   => true,
+	  }
   }
-  ->
-  exec { 'download_composer':
-    command   => $download_command,
-    cwd       => $tmp_path,
-    creates   => "${tmp_path}/composer.phar",
-    environment => ["http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],
-    logoutput => true,
-    path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
+  else {
+
+	  # download composer once we have all requirements for
+	  # it working properly.
+	  class { 'composer::dependencies': 
+      download_method => $composer::download_method,
+      method_package  => $composer::method_package,
+      php_package     => $composer::php_package,
+      suhosin_enabled => $composer::suhosin_enabled,
+	  }
+	  ->
+	  exec { 'install_composer':
+	    command   => $download_command,
+	    cwd       => $tmp_path,
+	    creates   => "${tmp_path}/composer.phar",
+	    environment => ["http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],
+	    logoutput => true,
+	    path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
+	  }    
   }
+
 
   # check if directory exists
   file { $target_dir:
@@ -104,7 +161,7 @@ class composer(
   file { "${target_dir}/${composer_file}":
     ensure  => present,
     source  => "${tmp_path}/composer.phar",
-    require => [ Exec['download_composer'], File[$target_dir] ],
+    require => [ Exec['install_composer'], File[$target_dir] ],
     mode    => 0755,
   }
 

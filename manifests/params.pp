@@ -36,7 +36,7 @@ class composer::params {
     'RedHat', 'Centos': {
       $target_dir      = '/usr/local/bin'
       $composer_file   = 'composer'
-      $download_method = 'wget'
+      $download_method = 'curl'
       $method_package  = $download_method
       $logoutput       = false
       $tmp_path        = '/tmp'

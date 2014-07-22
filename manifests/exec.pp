@@ -66,7 +66,7 @@ define composer::exec (
   exec { "composer_${cmd}_${title}":
     command     => template("composer/${cmd}.erb"),
     cwd         => $cwd,
-    logoutput   => $logoutput,
+    logoutput   => true,
     refreshonly => $refreshonly,
     user        => $user,
     path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
