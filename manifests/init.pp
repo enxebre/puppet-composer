@@ -112,6 +112,7 @@ class composer(
       command => "curl -x '${proxyuri}' -sS https://getcomposer.org/installer | php",
       cwd     => "${tmp_path}",
       path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
+      environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ],
       logoutput   => true,
     }
     ->
