@@ -73,6 +73,8 @@ define composer::exec (
     environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ],
     require     => [ File[$cwd] ],
     tag         => $cmd,
+    timeout     => 1200,
+    unless      => ["test -d ${cwd}vendor"],
   }
 
   Exec <| tag == 'config' |> -> Exec <| tag == 'require'|> -> Composer::Project <| |>

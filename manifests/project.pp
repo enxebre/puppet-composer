@@ -88,10 +88,11 @@ define composer::project(
   }
 
   exec { $exec_name:
-    command => "${base_command}${dev_arg}${repo}${pref_src}${vcs} create-project ${end_command}${v}",
-    tries   => $tries,
-    timeout => $timeout,
-    creates => $target_dir,
-    environment => ["COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],    
+    command     => "${base_command}${dev_arg}${repo}${pref_src}${vcs} create-project ${end_command}${v}",
+    tries       => $tries,
+    timeout     => $timeout,
+    creates     => $target_dir,
+    environment => ["COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],
+    unless      => ["test -d ${target_dir}"],
   }
 }
