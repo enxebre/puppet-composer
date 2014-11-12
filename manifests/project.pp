@@ -100,7 +100,6 @@ define composer::project(
   exec { $exec_name:
     command     => "${base_command}${dev_arg}${repo}${pref_src}${vcs} create-project ${end_command}${v}",
     tries       => $tries,
-    timeout     => $timeout,
     creates     => $target_dir,
     unless      => ["test -d ${target_dir}"],
   }

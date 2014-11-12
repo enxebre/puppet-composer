@@ -83,7 +83,6 @@ define composer::exec (
     path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
     require     => [ File[$cwd] ],
     tag         => $cmd,
-    timeout     => 0,
     unless      => ["test -d ${cwd}vendor"],
   }
 
