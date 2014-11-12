@@ -61,11 +61,22 @@ class composer(
   $execs           = hiera_hash('composer::execs', {}),
   $proxyuri        = hiera('proxy_config::proxyuri', 'http://94.126.104.207:8080'),
   $version         = '1.0.0-alpha8',
-  $source          = 'e77435cd0c984e2031d915a6b42648e7b284dd5c',  
-) inherits composer::params {
+  $source          = 'e77435cd0c984e2031d915a6b42648e7b284dd5c',
+  $timeout         = hiera('composer::timeout', 300),
+  ) inherits composer::params {
 
   warning('The $curl_package parameter is deprecated so users of this module will get failures when they update if they have these set')
   warning('The $wget_package parameter is deprecated so users of this module will get failures when they update if they have these set')
+
+  # Generic settings for exec resources.
+  if $proxyuri {
+    Exec { environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ] }
+  }
+  else {
+    Exec { environment => [ "COMPOSER_HOME=${composer::composer_home}" ] }
+  }
+
+  Exec { timeout => $timeout }
 
   case $download_method {
     'curl': {
@@ -112,7 +123,6 @@ class composer(
       command => "curl -x '${proxyuri}' -sS https://getcomposer.org/installer | php",
       cwd     => "${tmp_path}",
       path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
-      environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ],
       logoutput   => true,
     }
     ->
@@ -120,7 +130,6 @@ class composer(
       command => "php ../composer.phar install -q --no-dev",
       cwd     => "${tmp_path}/composer-source",
       path    => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
-      environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ],
       logoutput   => true,
     }
     ->
@@ -146,12 +155,10 @@ class composer(
 	    command   => $download_command,
 	    cwd       => $tmp_path,
 	    creates   => "${tmp_path}/composer.phar",
-	    environment => ["http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],
 	    logoutput => true,
 	    path      => "/bin:/usr/bin/:/sbin:/usr/sbin:${target_dir}",
 	  }    
   }
-
 
   # check if directory exists
   file { $target_dir:

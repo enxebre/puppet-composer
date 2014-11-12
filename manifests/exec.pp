@@ -32,10 +32,21 @@ define composer::exec (
   $user                     = undef,
   $global                   = false,
   $sys_link_bins            = false,
+  $timeout                  = hiera('composer::timeout', 300),
   $proxyuri                 = hiera('proxy_config::proxyuri', 'http://94.126.104.207:8080'),
 ) {
 
   require composer
+
+  # Generic settings for exec resources.
+  if $proxyuri {
+    Exec { environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ] }
+  }
+  else {
+    Exec { environment => [ "COMPOSER_HOME=${composer::composer_home}" ] }
+  }
+
+  Exec { timeout => $timeout }
 
   if $cmd != 'install' and $cmd != 'update' and $cmd != 'require' and $cmd != 'config' {
     fail("Only types 'install', 'update', 'require' and 'config' are allowed, ${cmd} given")
@@ -70,10 +81,9 @@ define composer::exec (
     refreshonly => $refreshonly,
     user        => $user,
     path        => "/bin:/usr/bin/:/sbin:/usr/sbin:${composer::target_dir}",
-    environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ],
     require     => [ File[$cwd] ],
     tag         => $cmd,
-    timeout     => 1200,
+    timeout     => 0,
     unless      => ["test -d ${cwd}vendor"],
   }
 

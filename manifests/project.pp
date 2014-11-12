@@ -46,10 +46,20 @@ define composer::project(
   $repository_url = undef,
   $keep_vcs       = false,
   $tries          = 3,
-  $timeout        = 1200,
   $user           = undef,
-  $proxyuri        = hiera('proxy_config::proxyuri', 'http://94.126.104.207:8080'),
+  $timeout        = hiera('composer::timeout', 300),
+  $proxyuri       = hiera('proxy_config::proxyuri', 'http://94.126.104.207:8080'),
 ) {
+
+  # Generic settings for exec resources.
+  if $proxyuri {
+    Exec { environment => [ "COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}" ] }
+  }
+  else {
+    Exec { environment => [ "COMPOSER_HOME=${composer::composer_home}" ] }
+  }
+
+  Exec { timeout => $timeout }
 
   require composer
 
@@ -92,7 +102,6 @@ define composer::project(
     tries       => $tries,
     timeout     => $timeout,
     creates     => $target_dir,
-    environment => ["COMPOSER_HOME=${composer::composer_home}", "http_proxy=${proxyuri}", "https_proxy=${proxyuri}", "HTTP_PROXY=${proxyuri}", "HTTPS_PROXY=${proxyuri}"],
     unless      => ["test -d ${target_dir}"],
   }
 }
