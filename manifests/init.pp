@@ -170,7 +170,7 @@ class composer(
     ensure  => present,
     source  => "${tmp_path}/composer.phar",
     require => [ Exec['install_composer'], File[$target_dir] ],
-    mode    => 0755,
+    mode    => '0755',
   }
 
   if $projects or $execs {
